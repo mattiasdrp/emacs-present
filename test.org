@@ -1,0 +1,31 @@
+#+title: TEST ORG PRESENT
+
+* Hi
+
+* Test
+
+#+ATTR_HTML :align center
+#+ATTR_ORG: :align center
+[[file:calvin_hobbes.jpg]]
+
+* Code
+
+#+begin_src ocaml
+  let test x : int -> int =
+    let y = x + 2 in
+    y
+#+end_src
+
+* Sub-heading
+
+Text
+
+** Sub-heading 1
+
+Text 2
+
+** Sub-heading 2
+
+Text 3
+
+* The end
