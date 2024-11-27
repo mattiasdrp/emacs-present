@@ -48,6 +48,9 @@
   ;; Assume :ensure t unless otherwise specified.
   (setq elpaca-use-package-by-default t))
 
+(set-frame-parameter (selected-frame) 'fullscreen 'maximized)
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 (elpaca-wait)
 
 (eval-and-compile
@@ -82,26 +85,6 @@
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file 'noerror)
-
-;; Appearance etc
-
-(use-package doom-themes
-  :config
-  ;; Global settings (defaults)
-  (load-theme pokemacs-theme t)
-
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-
-  ;; Enable custom neotree theme (all-the-icons must be installed!)
-  ;; (doom-themes-neotree-config)
-  ;; or for treemacs users
-  (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
-  (doom-themes-treemacs-config)
-
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config)
-  (message "`doom-themes' loaded"))
 
 (use-package nerd-icons
   :config
@@ -698,7 +681,7 @@
   (org-hide-emphasis-markers t)
   (org-hide-leading-stars nil)
   (org-hide-macro-markers t)
-  (org-image-actual-width '(600))
+  (org-image-actual-width nil)
   (org-image-align 'center)
   (org-latex-compiler "latexmk")
   (org-log-done 'time)
@@ -720,11 +703,51 @@
      (shell . t)))
   (message "`org-mode' loaded"))
 
+;; Appearance etc
+
+(use-package doom-themes
+  :config
+  ;; Global settings (defaults)
+  (load-theme pokemacs-theme t)
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+
+  ;; Enable custom neotree theme (all-the-icons must be installed!)
+  ;; (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (setq doom-themes-treemacs-theme "doom-colors") ; use the colorful treemacs theme
+  (doom-themes-treemacs-config)
+
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config)
+  (message "`doom-themes' loaded"))
+
+;; This package needs to be loaded to use language parsers
+(use-package tree-sitter-langs
+  :config (message "`tree-sitter-langs' loaded"))
+
+(use-package tree-sitter
+  :hook
+  (tuareg-mode . tree-sitter-mode)
+  (tree-sitter-after-on . tree-sitter-hl-mode)
+  :config
+  ;; This makes every node a link to a section of code
+  (setq tree-sitter-debug-jump-buttons t)
+  ;; and this highlights the entire sub tree in your code
+  (setq tree-sitter-debug-highlight-jump-region t)
+
+  ;; (global-tree-sitter-mode)
+  :config (message "`tree-sitter' loaded"))
+
 ;;; Org Present --------------------------------------------
 
 (use-package hide-mode-line
   :defer t
   :config (message "`hide-mode-line' loaded"))
+
+(use-package mixed-pitch
+  :ensure t)
 
 ;; Install org-present if needed
 (use-package org-present
@@ -762,26 +785,22 @@
   (defun mdrp/org-present-start ()
     (visual-fill-column-mode 1)
     (visual-line-mode 1)
-    (setq-local cursor-type nil)
-    (setq-local visual-fill-column-width 80)
+    (setq-local visual-fill-column-width 120)
     (setq-local line-spacing 0.7)
-    ;; (mixed-pitch-mode 1)
     (setq-local face-remapping-alist
-                '((default (:height 1.7) variable-pitch)
-                  (header-line (:height 4.0) variable-pitch)
-                  (org-document-title (:height 1.75) org-document-title)
-                  (org-level-1 (:height 1.5) org-level-1)
-                  (org-level-2 (:height 1.5) org-level-2)
-                  (org-level-3 (:height 1.5) org-level-3)
-                  (org-link fixed-pitch)
-                  ;; (org-verbatim (:height 1.55) org-verbatim)
-                  ;; (org-block (:height 1.25) org-block)
-                  ;; (org-block-begin-line (:height 0.7) org-block-begin-line)
-                  ))
+                '((default (:height 1.6))
+                  (header-line (:height 4.0))
+                  (org-document-title (:height 1.6) org-document-title)
+                  (org-level-1 (:height 1.4) org-level-1)
+                  (org-level-2 (:height 1.4) org-level-2)
+                  (org-level-3 (:height 1.4) org-level-3)
+                  (org-link (:height 1.6) fixed-pitch)))
     (setq header-line-format " ")
     (consult-theme 'doom-palenight)
     (hide-mode-line-mode 1)
-    (set-frame-parameter (selected-frame) 'alpha '(97 . 100))
+    ;; (set-frame-parameter (selected-frame) 'alpha '(97 . 100))
+    (mixed-pitch-mode 1)
+    (setq-local cursor-type nil)
     (message "`org-present' start"))
 
   (defun mdrp/org-present-quit ()
